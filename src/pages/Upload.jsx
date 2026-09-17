@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../supabase/client';
+import { useAuth } from '../context/AuthContext';
 
 export default function Upload() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Estados del formulario
   const [titulo, setTitulo] = useState('');
@@ -49,6 +51,11 @@ export default function Upload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+
+    if (!user) {
+      setErrorMessage('Debes iniciar sesión para poder subir un acorde.');
+      return;
+    }
 
     if (!titulo.trim() || !artista.trim() || !archivo) {
       setErrorMessage('Por favor completa todos los campos y adjunta un archivo válido.');
@@ -99,7 +106,7 @@ export default function Upload() {
         throw new Error('No se pudo generar la URL pública del archivo.');
       }
 
-      // --- Crear registro en la tabla 'canciones' ÚNICAMENTE tras el éxito en Storage ---
+      // --- Crear registro en la tabla 'canciones' vinculando al usuario actual ---
       setUploadStep('Registrando información en la base de datos...');
       const { data: songRecord, error: dbError } = await supabase
         .from('canciones')
@@ -107,8 +114,10 @@ export default function Upload() {
           {
             titulo: titulo.trim(),
             artista: artista.trim(),
-            tipoArchivo, // 'pdf' | 'word'
+            tipoArchivo,
             archivoUrl: downloadUrl,
+            user_id: user.id,
+            user_email: user.email,
           },
         ])
         .select()
@@ -131,6 +140,28 @@ export default function Upload() {
     }
   };
 
+  // Si no está autenticado, invitarlo a iniciar sesión
+  if (!user) {
+    return (
+      <div className="page-container">
+        <div className="card empty-state">
+          <h2>Inicia sesión para subir acordes</h2>
+          <p>
+            Para compartir y administrar tus partituras y canciones, necesitas tener una cuenta.
+          </p>
+          <div className="empty-actions mt-4">
+            <Link to="/login" state={{ from: { pathname: '/subir' } }} className="btn btn-primary">
+              Iniciar Sesión o Registrarme
+            </Link>
+            <Link to="/" className="btn btn-secondary ml-2">
+              Volver al catálogo
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <div className="card form-card">
@@ -138,15 +169,14 @@ export default function Upload() {
           <Link to="/" className="back-link">
             ← Volver a canciones
           </Link>
-          <h2>Subir Nuevo Acorde (Supabase)</h2>
+          <h2>Subir Nuevo Acorde</h2>
           <p className="subtitle">
-            Almacena acordes en formato PDF o Word (DOC, DOCX) con enlace directo y visualización.
+            Publicando como: <strong>{user.email}</strong>
           </p>
         </div>
 
         {errorMessage && (
           <div className="alert alert-error" role="alert">
-            <span className="alert-icon">⚠️</span>
             <span>{errorMessage}</span>
           </div>
         )}

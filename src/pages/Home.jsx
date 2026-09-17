@@ -9,7 +9,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Obtener lista de canciones desde Supabase
+  // Obtener lista de canciones desde Supabase (catálogo global)
   useEffect(() => {
     const fetchCanciones = async () => {
       try {
@@ -65,15 +65,18 @@ export default function Home() {
       {/* Encabezado y Barra de Búsqueda */}
       <header className="home-header">
         <div className="home-title-section">
-          <h1>Biblioteca de Acordes</h1>
+          <h1>Catálogo Comunitario de Acordes</h1>
           <p className="subtitle">
-            Explora, visualiza y descarga acordes en formato PDF y Word con Supabase.
+            Explora y visualiza todos los acordes compartidos por la comunidad. Inicia sesión para descargar o subir canciones.
           </p>
         </div>
 
         <div className="home-controls">
           <div className="search-bar-container">
-            <span className="search-icon">🔍</span>
+            <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
             <input
               type="text"
               placeholder="Buscar por canción o artista..."
@@ -93,7 +96,7 @@ export default function Home() {
           </div>
 
           <Link to="/subir" className="btn btn-primary">
-            + Subir Acorde
+            Subir Acorde
           </Link>
         </div>
       </header>
@@ -101,7 +104,6 @@ export default function Home() {
       {/* Alerta de Error */}
       {error && (
         <div className="alert alert-error" role="alert">
-          <span className="alert-icon">⚠️</span>
           <span>{error}</span>
         </div>
       )}
@@ -110,12 +112,11 @@ export default function Home() {
       {isLoading ? (
         <div className="loading-state">
           <div className="spinner"></div>
-          <p>Cargando canciones desde Supabase...</p>
+          <p>Cargando catálogo comunitario...</p>
         </div>
       ) : cancionesFiltradas.length === 0 ? (
         /* Estado Vacío */
         <div className="empty-state card">
-          <div className="empty-icon">🎼</div>
           <h3>
             {searchTerm
               ? `No se encontraron coincidencias para "${searchTerm}"`
@@ -124,7 +125,7 @@ export default function Home() {
           <p>
             {searchTerm
               ? 'Intenta con otro término de búsqueda o limpia el filtro.'
-              : 'Sube tu primer archivo de acordes en PDF o Word para comenzar.'}
+              : 'Sé el primero en compartir un acorde con la comunidad.'}
           </p>
           {!searchTerm && (
             <Link to="/subir" className="btn btn-primary mt-4">
@@ -133,41 +134,48 @@ export default function Home() {
           )}
         </div>
       ) : (
-        /* Cuadrícula de Canciones */
-        <div className="songs-grid">
+        /* Lista de Canciones */
+        <div className="songs-list">
           {cancionesFiltradas.map((cancion) => {
             const isPdf = cancion.tipoArchivo === 'pdf' || cancion.tipo_archivo === 'pdf';
+            const uploaderName = cancion.user_email
+              ? cancion.user_email.split('@')[0]
+              : 'Comunidad';
+
             return (
-              <article key={cancion.id} className="song-card card">
-                <div className="song-card-top">
+              <div key={cancion.id} className="song-list-item">
+                <div className="song-item-type">
                   <span
                     className={`badge badge-${isPdf ? 'pdf' : 'word'}`}
                   >
-                    {isPdf ? '📄 PDF' : '📝 WORD'}
-                  </span>
-                  <span className="song-date">
-                    {formatFecha(cancion.created_at || cancion.createdAt)}
+                    {isPdf ? 'PDF' : 'WORD'}
                   </span>
                 </div>
 
-                <div className="song-card-body">
-                  <h3 className="song-title" title={cancion.titulo}>
-                    {cancion.titulo}
+                <div className="song-item-info">
+                  <h3 className="song-item-title">
+                    <Link to={`/cancion/${cancion.id}`}>
+                      {cancion.titulo}
+                    </Link>
                   </h3>
-                  <p className="song-artist" title={cancion.artista}>
-                    👤 {cancion.artista}
-                  </p>
+                  <div className="song-item-meta">
+                    <span className="song-item-artist">{cancion.artista}</span>
+                    <span className="song-item-dot">•</span>
+                    <span className="song-item-uploader">Subido por {uploaderName}</span>
+                    <span className="song-item-dot">•</span>
+                    <span className="song-item-date">{formatFecha(cancion.created_at || cancion.createdAt)}</span>
+                  </div>
                 </div>
 
-                <div className="song-card-footer">
+                <div className="song-item-action">
                   <Link
                     to={`/cancion/${cancion.id}`}
-                    className="btn btn-card-action"
+                    className="btn btn-list-action"
                   >
-                    Ver Acorde →
+                    Ver Acorde
                   </Link>
                 </div>
-              </article>
+              </div>
             );
           })}
         </div>

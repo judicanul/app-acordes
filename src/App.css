@@ -248,76 +248,102 @@
   font-size: 0.9rem;
 }
 
-/* Cuadrícula de Canciones */
-.songs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
+/* Lista de Canciones */
+.songs-list {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
-.song-card {
+.song-list-item {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.25rem;
-  border-radius: var(--radius-md);
-}
-
-.song-card:hover {
-  border-color: var(--primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-.song-card-top {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.85rem;
+  padding: 1.1rem 1.35rem;
+  border-bottom: 1px solid var(--border-color);
+  gap: 1.25rem;
+  transition: background-color 0.15s ease;
 }
 
-.song-date {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+.song-list-item:last-child {
+  border-bottom: none;
 }
 
-.song-card-body {
-  margin-bottom: 1.25rem;
+.song-list-item:hover {
+  background-color: var(--bg-main);
 }
 
-.song-title {
-  font-size: 1.2rem;
+.song-item-type {
+  flex-shrink: 0;
+}
+
+.song-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-item-title {
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.35rem;
-  color: var(--text-main);
+  margin-bottom: 0.25rem;
   line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.song-artist {
+.song-item-title a {
+  color: var(--text-main);
+  transition: color 0.15s ease;
+}
+
+.song-item-title a:hover {
+  color: var(--primary);
+}
+
+.song-item-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
-  font-size: 0.95rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.btn-card-action {
-  width: 100%;
+.song-item-artist {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.song-item-dot {
+  color: var(--border-color);
+  font-size: 0.75rem;
+}
+
+.song-item-uploader {
+  color: var(--text-muted);
+}
+
+.song-item-date {
+  color: var(--text-muted);
+}
+
+.song-item-action {
+  flex-shrink: 0;
+}
+
+.btn-list-action {
   background-color: var(--primary-light);
   color: var(--primary);
   border: 1px solid rgba(99, 102, 241, 0.2);
-  padding: 0.55rem;
+  padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  text-align: center;
+  white-space: nowrap;
   transition: all 0.15s ease;
+  display: inline-block;
 }
 
-.btn-card-action:hover {
+.btn-list-action:hover {
   background-color: var(--primary);
   color: #ffffff;
 }
@@ -617,4 +643,304 @@
     height: 60vh;
     min-height: 400px;
   }
+  .song-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1rem;
+  }
+  .song-item-action {
+    width: 100%;
+  }
+  .btn-list-action {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* --- Nuevos Estilos: Autenticación, Modal y Eliminación --- */
+
+/* Botones de acción en detalle */
+.btn-delete-action {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.btn-delete-action:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.badge-uploader {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* Modal de Confirmación */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.modal-container {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  animation: scaleUp 0.15s ease-out;
+}
+
+.modal-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  background-color: rgba(239, 68, 68, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.modal-icon {
+  font-size: 1.75rem;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+}
+
+.modal-message {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+.btn-danger {
+  background-color: #ef4444;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #dc2626;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Navbar Controles de Usuario */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.user-email-badge {
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-logout:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-login {
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.btn-login:hover,
+.btn-login.active {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Vista de Autenticación */
+.auth-card {
+  max-width: 440px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.auth-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 0.75rem 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.auth-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-loading-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+.alert-success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Botón de descarga con bloqueo para visitantes */
+.btn-download-locked {
+  background-color: #f59e0b;
+  color: #ffffff;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.btn-download-locked:hover {
+  background-color: #d97706;
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.viewer-external-link.locked {
+  color: #f59e0b;
+}
+
+.viewer-external-link.locked:hover {
+  text-decoration: underline;
+}
+
+/* Etiqueta de usuario en tarjetas de la biblioteca */
+.song-uploader-tag {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.song-uploader-tag span {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Insignia de Usuario Padre (Admin) */
+.badge-admin {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  color: #d97706 !important;
+}
+
+.admin-tag {
+  display: inline-block;
+  background-color: #f59e0b;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  margin-left: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
